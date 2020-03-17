@@ -6,6 +6,7 @@
 using namespace std;
 
 struct Node{
+    int value;
     int subscript;
     Node *next;
 };
@@ -64,7 +65,7 @@ void cutString(string &num1, string &num2, int &totalD, Node *&head1, Node *&hea
 void addNode(Node *&head, int num)
 {
     Node *A = new Node, *ptr = head;
-    A->subscript = num;
+    A->value = num;
     A->next = nullptr;
     ptr = head;
     if (head == nullptr)
@@ -85,15 +86,15 @@ void printlist(Node *&head1, Node *&head2){
     Node *ptr1 = nullptr, *ptr2 = nullptr;
     ptr1 = head1;
     ptr2 = head2;
-    cout << ptr1 -> subscript << endl;
+    cout << ptr1 -> value << endl;
     while(ptr1 -> next != nullptr){
         ptr1 = ptr1 -> next;
-        cout << ptr1 -> subscript << endl;
+        cout << ptr1 -> value << endl;
     }
-    cout << ptr2 -> subscript << endl;
+    cout << ptr2 -> value << endl;
     while(ptr2 -> next != nullptr){
         ptr2 = ptr2 -> next;
-        cout << ptr2 -> subscript << endl;
+        cout << ptr2 -> value << endl;
     }
 }
 
