@@ -1,0 +1,99 @@
+
+#include <iostream>
+#include <memory>
+#include <fstream>
+#include <string>
+using namespace std;
+
+struct Node{
+    int subscript;
+    Node *next;
+};
+void input(string &num1, string &num2);
+void cutString(string &num1, string &num2, int &totalD, Node *&ptr, Node *&ptrr);
+void addNode(Node *&head, int num);
+void printlist(Node *&head1, Node *&head2);
+int main(){
+    Node *head1 = nullptr, *head2 = nullptr;
+    string num1, num2;
+    int totalDigit;
+    input(num1, num2);
+    cutString(num1, num2, totalDigit, head1, head2);
+    printlist(head1, head2);
+}
+void menu(){
+    cout << "Select from menu" << endl
+         << "1. addition" << endl
+         << "2. subtruction" << endl
+         << "3. multiplication" << endl
+         << "4. division " << endl;
+    
+}
+void input(string &num1, string &num2){
+    fstream readfile;
+    string filename;
+    cout << "Enter the file name" << endl;
+    cin >> filename;
+    readfile.open(filename, ios::in | ios::binary);
+    getline(readfile, num1);
+    readfile.ignore();
+    getline(readfile, num2);
+   
+}
+
+void cutString(string &num1, string &num2, int &totalD, Node *&head1, Node *&head2){
+    int length1 = static_cast<int>(num1.length());
+    int length2 = static_cast<int>(num2.length());
+    int nodeForNum1 = length1/3 + 1;
+    int nodeForNum2 = length2/3 + 1;
+    cout << nodeForNum1 << endl;
+    cout << nodeForNum2 << endl;
+    totalD = length1 + length2;
+    //Node *head = nullptr;
+    for (int i = 0; i < length1; i = i + 3){
+        //cout << num1.substr(i, 3) << endl;
+        addNode(head1, stoi(num1.substr(i, 3)));
+    }
+    for (int i = 0; i < length2; i = i + 3){
+        //cout << num1.substr(i, 3) << endl;
+        addNode(head2, stoi(num2.substr(i, 3)));
+    }
+    
+}
+
+void addNode(Node *&head, int num)
+{
+    Node *A = new Node, *ptr = head;
+    A->subscript = num;
+    A->next = nullptr;
+    ptr = head;
+    if (head == nullptr)
+    {
+         head = A;
+         return;
+    }
+    else
+    {
+        while(ptr -> next != nullptr){
+            ptr = ptr -> next;
+        }
+        ptr -> next = A;
+    }
+}
+
+void printlist(Node *&head1, Node *&head2){
+    Node *ptr1 = nullptr, *ptr2 = nullptr;
+    ptr1 = head1;
+    ptr2 = head2;
+    cout << ptr1 -> subscript << endl;
+    while(ptr1 -> next != nullptr){
+        ptr1 = ptr1 -> next;
+        cout << ptr1 -> subscript << endl;
+    }
+    cout << ptr2 -> subscript << endl;
+    while(ptr2 -> next != nullptr){
+        ptr2 = ptr2 -> next;
+        cout << ptr2 -> subscript << endl;
+    }
+}
+
