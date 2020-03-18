@@ -1,3 +1,0 @@
-/*
-for clone a new local repo
-*/
