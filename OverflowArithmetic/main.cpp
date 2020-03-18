@@ -15,9 +15,10 @@ struct Node
 };
 
 void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n);
-void overflow(Node*& head, int val, int strlen);
+void subtraction(Node*& head2, Node*& head3, int n);    //n is how many nodes in List 2
+void overflow(Node*& head, int val, int n);
 int getListValue(Node*& head, int pos);
-void setListValue(Node*& head, int pos, int val);
+void setListValue(Node*& head, int pos, int val, bool swing);
 void displayList(Node*& head);
 void menu();
 void input(string& num1, string& num2);
@@ -26,6 +27,7 @@ void addNode(Node*& head, int num, int pos);
 void printlist(Node*& head1, Node*& head2);
 int modifyNodeNums(int num);
 void initializeResult(Node*& head, int totalNode);
+void initializeResult(Node*& head1, Node*& head2, int totalNode);
 
 
 int main() 
@@ -33,25 +35,94 @@ int main()
     Node* head1 = nullptr, * head2 = nullptr, * head3 = nullptr;
     string num1, num2;
     int m, n;
-    input(num1, num2);
-    cutString(num1, num2, head1, head2, m, n);
-    initializeResult(head3, m + n);
-    multiplication(head1, head2, head3, m, n);
+    int choice;
+    do {
+        menu();
+        cin >> choice;
+        if (choice != 1 && choice != 2 && choice != 3 && choice != 4)
+        {
+            exit(EXIT_SUCCESS);
+        }
+        input(num1, num2);
+        cutString(num1, num2, head1, head2, m, n);
+        initializeResult(head3, m + n);
 
-    //display
-    Node* temp = head1;
-    cout << "The first number is: \t";
-    displayList(temp);
-    cout << endl;
-    temp = head2;
-    cout << "The second number is: \t";
-    displayList(temp);
-    cout << endl;
-    temp = head3;
-    cout << "The result is: \t\t";
-    displayList(temp);
+        switch (choice)
+        {
+        case 1: //+
+            cout << "Performing addition\n";
+            subtraction(head2, head3, n);
+            break;
+        case 2: //-
+            cout << "Performing subtraction\n";
+
+            break;
+        case 3: //*
+            cout << "Performing multiplication\n";
+            multiplication(head1, head2, head3, m, n);
+            break;
+        case 4: //division
+            cout << "Performing division\n";
+
+            break;
+        }
+        //display
+        Node* temp = head1;
+        cout << "The first number is: \t";
+        displayList(temp);
+        cout << endl;
+        temp = head2;
+        cout << "The second number is: \t";
+        displayList(temp);
+        cout << endl;
+        temp = head3;
+        cout << "The result is: \t\t";
+        displayList(temp);
+
+    } while (choice >= 1 && choice <= 4);
 
 
+    return 0;
+}
+
+
+//initialize the result linked list with the first list's content
+void initializeResult(Node*& head1, Node*& head3, int totalNode)
+{
+    Node* ptr1 = head1;
+    Node* ptr2 = head3;
+    initializeResult(head3, totalNode);
+    while (ptr1 != nullptr)
+    {
+        ptr2->num = ptr1->num;
+        ptr2->loc = ptr1->loc;
+        ptr2 = ptr2->next;
+        ptr1 = ptr1->next;
+    }
+}
+
+
+void subtraction(Node*& head2, Node*& head3, int n)    //n is how many nodes in List 2
+{
+    int i, sum;
+    for (i = 0; i < n; i++)
+    {
+        sum = - getListValue(head2, n) + getListValue(head3, n);
+        overflow(head3, sum, i);
+    }
+}
+
+void underflow(Node*& head, int val, int pos)
+{
+    if (val < 0)    //need 1000 in addition
+    {
+        setListValue(head, pos + 1, -1);
+        setListValue(head, pos, static_cast<int>(pow(10, 3)) + val);
+    }
+    else
+    {
+        setListValue(head, pos, val);
+    }
 }
 
 void initializeResult(Node*& head, int totalNode)
@@ -78,18 +149,18 @@ void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n)
     }
 }
 
-void overflow(Node*& head, int val, int strlen)
+void overflow(Node*& head, int val, int n)
 {
     if (val / static_cast<int>(pow(10, 3)) >= 1)
     {
         //split the part that overflows 10^3 to the next 3-digit node
-        setListValue(head, strlen + 1, val / pow(10, 3));
+        setListValue(head, n + 1, val / pow(10, 3), true);
         //set the base 3 digits
-        setListValue(head, strlen, val % static_cast<int>(pow(10, 3)));
+        setListValue(head, n, val % static_cast<int>(pow(10, 3)), true);
     }
     else
     {
-        setListValue(head, strlen, val);
+        setListValue(head, n, val, true);
     }
 }
 
@@ -105,7 +176,7 @@ int getListValue(Node*& head, int pos)
     return ptr->num;
 }
 
-void setListValue(Node*& head, int pos, int val)
+void setListValue(Node*& head, int pos, int val, bool swing)
 {
     Node* ptr = head;
     int sum;
@@ -113,14 +184,25 @@ void setListValue(Node*& head, int pos, int val)
     {
         ptr = ptr->next;
     }
-    if(ptr->num + val < static_cast<int>(pow(10, 3)))
-        ptr->num += val;
+    if (swing)
+    {
+        if (ptr->num + val < static_cast<int>(pow(10, 3)))
+            ptr->num += val;
+        else
+        {
+            sum = val + ptr->num;
+            ptr->num = sum % static_cast<int>(pow(10, 3));
+            ptr = ptr->next;
+            ptr->num += sum / static_cast<int>(pow(10, 3));
+        }
+
+    }
     else
     {
-        sum = val + ptr->num;
-        ptr->num = sum % static_cast<int>(pow(10, 3));
-        ptr = ptr->next;
-        ptr->num += sum / static_cast<int>(pow(10, 3));
+        if (ptr->num + val < 0)
+        {
+            ptr->
+        }
     }
 }
 
@@ -156,6 +238,7 @@ void menu() {
         << "2. subtruction" << endl
         << "3. multiplication" << endl
         << "4. division " << endl;
+    cout << "Enter any other key to exit\n";
 
 }
 void input(string& num1, string& num2) {
