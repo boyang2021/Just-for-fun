@@ -1,3 +1,4 @@
+
 #include<iostream>
 #include<fstream>
 #include<cstdlib>
@@ -18,7 +19,9 @@ void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n);
 void subtraction(Node*& head2, Node*& head3, int n);    //n is how many nodes in List 2
 void overflow(Node*& head, int val, int n);
 int getListValue(Node*& head, int pos);
-void setListValue(Node*& head, int pos, int val, bool swing);
+void setListValue(Node*& head, int pos, int val);
+void setValue(Node*& head, int pos, int val);
+void incrementValue(Node*& head, int pos, int val);
 void displayList(Node*& head);
 void menu();
 void input(string& num1, string& num2);
@@ -51,7 +54,7 @@ int main()
         {
         case 1: //+
             cout << "Performing addition\n";
-            subtraction(head2, head3, n);
+            sequentialFlow();
             break;
         case 2: //-
             cout << "Performing subtraction\n";
@@ -98,6 +101,22 @@ void initializeResult(Node*& head1, Node*& head3, int totalNode)
         ptr2->loc = ptr1->loc;
         ptr2 = ptr2->next;
         ptr1 = ptr1->next;
+    }
+}
+
+void sequentialFlow(Node*& head, int val, int pos)
+{
+    //in case of carrying
+    int sum = getListValue(head, pos) + val;
+    if (sum > 1000)
+    {
+        sequentialFlow(head, pos + 1, sum / 1000);
+        setValue(head, pos, sum % 1000);
+    }
+    //if the addition does not exceed 3-digit size (<1000)
+    else
+    {
+        setValue(head, pos, sum);
     }
 }
 
@@ -149,18 +168,23 @@ void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n)
     }
 }
 
+/*
+This function is designed to address the multiplication
+in the arithmetic and does not include the case of
+carrying.
+*/
 void overflow(Node*& head, int val, int n)
 {
     if (val / static_cast<int>(pow(10, 3)) >= 1)
     {
         //split the part that overflows 10^3 to the next 3-digit node
-        setListValue(head, n + 1, val / pow(10, 3), true);
+        setListValue(head, n + 1, val / pow(10, 3));
         //set the base 3 digits
-        setListValue(head, n, val % static_cast<int>(pow(10, 3)), true);
+        setListValue(head, n, val % static_cast<int>(pow(10, 3)));
     }
     else
     {
-        setListValue(head, n, val, true);
+        setListValue(head, n, val);
     }
 }
 
@@ -176,7 +200,7 @@ int getListValue(Node*& head, int pos)
     return ptr->num;
 }
 
-void setListValue(Node*& head, int pos, int val, bool swing)
+void setValue(Node*& head, int pos, int val)
 {
     Node* ptr = head;
     int sum;
@@ -184,26 +208,38 @@ void setListValue(Node*& head, int pos, int val, bool swing)
     {
         ptr = ptr->next;
     }
-    if (swing)
-    {
-        if (ptr->num + val < static_cast<int>(pow(10, 3)))
-            ptr->num += val;
-        else
-        {
-            sum = val + ptr->num;
-            ptr->num = sum % static_cast<int>(pow(10, 3));
-            ptr = ptr->next;
-            ptr->num += sum / static_cast<int>(pow(10, 3));
-        }
+    ptr->num = val;
+}
 
+void incrementValue(Node*& head, int pos, int val)
+{
+    Node* ptr = head;
+    int sum;
+    while (ptr != nullptr && ptr->loc != pos)
+    {
+        ptr = ptr->next;
     }
+    ptr->num += val;
+}
+
+void setListValue(Node*& head, int pos, int val)
+{
+    Node* ptr = head;
+    int sum;
+    while (ptr != nullptr && ptr->loc != pos)
+    {
+        ptr = ptr->next;
+    }
+    if (ptr->num + val < static_cast<int>(pow(10, 3)))
+        ptr->num += val;
     else
     {
-        if (ptr->num + val < 0)
-        {
-            ptr->
-        }
+        sum = val + ptr->num;
+        ptr->num = sum % static_cast<int>(pow(10, 3));
+        ptr = ptr->next;
+        ptr->num += sum / static_cast<int>(pow(10, 3));
     }
+
 }
 
 void displayList(Node*& head)
