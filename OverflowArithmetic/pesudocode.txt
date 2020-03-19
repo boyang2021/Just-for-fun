@@ -1,0 +1,26 @@
+Input - read number which is overflow into a string -1
+
+
+
+Cut String into pieces, each pieces contain three digit-2
+	Structure subscript & next pointer 
+	create two linked list for two different number store each pieces 	into the linked list in ordered. 
+
+确定 linked list 数量 （）- create the third linked list-3
+
+Calculation-4
+	nasted for loop: every pieces time all the number stored in other 	linked list 
+	initialize 第三个全为零；
+	结果存到第三个linked list：
+		结果存相对应的格子，超出则到下一位去
+
+
+	//是否超出三位，做方程- 5
+	
+
+
+
+print final linked list-6
+
+
+ 
