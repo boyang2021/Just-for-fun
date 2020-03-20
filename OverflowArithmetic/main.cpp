@@ -238,6 +238,7 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
     int i, j = 0;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (length1 <= 4)
     {
         addNode(head1, stoi(num1.substr(0, length1)), 0);
@@ -256,14 +257,21 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
 =======
 =======
 >>>>>>> parent of 39cbb02... complete version, able to input negative numbers with 1~3 digits
+=======
+>>>>>>> parent of 39cbb02... complete version, able to input negative numbers with 1~3 digits
     for (i = length1 - 3; i >= 0; i = i - 3) {
         //cout << num1.substr(i, 3) << endl;
         addNode(head1, stoi(num1.substr(i, 3)), j);
         j++;
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (i < 3)
             break;
 >>>>>>> parent of b4e6adf... complete version for positive/negative integer input, with an enlarged main
+=======
+        if(i == 4 && num1[0] == '-' || i < 3)
+            break;
+>>>>>>> parent of 39cbb02... complete version, able to input negative numbers with 1~3 digits
 =======
         if(i == 4 && num1[0] == '-' || i < 3)
             break;
@@ -274,6 +282,7 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
 
     ptr = head2;
     j = 0;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     if (length2 <= 4)
@@ -294,14 +303,21 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
 =======
 =======
 >>>>>>> parent of 39cbb02... complete version, able to input negative numbers with 1~3 digits
+=======
+>>>>>>> parent of 39cbb02... complete version, able to input negative numbers with 1~3 digits
     for (i = length2 - 3; i >= 0; i = i - 3) {
         //cout << num1.substr(i, 3) << endl;
         addNode(head2, stoi(num2.substr(i, 3)), j);
         j++;
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (i < 3)
             break;
 >>>>>>> parent of b4e6adf... complete version for positive/negative integer input, with an enlarged main
+=======
+        if (i == 4 && num2[0] == '-' || i < 3)
+            break;
+>>>>>>> parent of 39cbb02... complete version, able to input negative numbers with 1~3 digits
 =======
         if (i == 4 && num2[0] == '-' || i < 3)
             break;
