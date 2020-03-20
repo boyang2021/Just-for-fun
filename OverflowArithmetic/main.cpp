@@ -378,14 +378,20 @@ bool numCompare(Node*& head1, Node*& head2, int m, int n)
     else
     {
         //if they are equal
-        if (getListValue(head1, m - 1) >= getListValue(head2, n - 1))
+        int i;
+        //check every node(3 digits)
+        for (i = m - 1; i >= 0; i--)
         {
-            return true;
+            if (getListValue(head1, i) > getListValue(head2, i))
+            {
+                return true;
+            }
+            else if(getListValue(head1, i) < getListValue(head2, i))
+            {
+                return false;
+            }
         }
-        else
-        {
-            return false;
-        }
+        return true;
     }
 }
 
