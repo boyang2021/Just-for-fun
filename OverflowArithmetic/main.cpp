@@ -15,7 +15,7 @@ struct Node
     Node* next;
 };
 
-void overflowMulti(Node*& head1, Node*& head2, Node*& head3, int m, int n);
+void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n);
 int getListValue(Node*& head, int pos);
 void setValue(Node*& head, int pos, int val);
 void incrementValue(Node*& head, int pos, int val);
@@ -37,11 +37,6 @@ int nodeNumSub(int m, int n);
 int nodeNumMulti(int m, int n);
 void displayList(Node*& head);
 bool digit(string number);
-void addition(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode);
-void subtraction(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode);
-void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode);
-int isNegative(Node*& head1, Node*& head2, int m, int n);
-void negateNode(Node*& head, int m);
 
 
 int main() 
@@ -49,10 +44,9 @@ int main()
     Node* head1, * head2, * head3;
     Node* temp = nullptr;
     string num1, num2;
-    int m, n, totalNode = 0, flag;
+    int m, n, totalNode;
     string choice;
-    do 
-    {
+    do {
         menu();
         getline(cin, choice);
         while (!digit(choice))    //input validation
@@ -81,94 +75,48 @@ int main()
         cout << "The second number is: \t";
         displayList(temp);
         cout << endl;
-        flag = isNegative(head1, head2, m, n);
+
         switch (stoi(choice))
         {
         case 1: //+
-            if (flag == 2)      //==> NUM1 + NUM2
-            {
-                addition(head1, head2, head3, m, n, totalNode);
-            }
-            else if (flag == 1) //==> NUM1 - NUM2
-            {
-                negateNode(head2, n);
-                subtraction(head1, head2, head3, m, n, totalNode);
-            }
-            else if (flag == -1)//==> NUM2 - NUM1
-            {
-                negateNode(head1, m);
-                subtraction(head2, head1, head3, n, m, totalNode);
-            }
-            else                //==> -(NUM1 + NUM2)
-            {
-                negateNode(head1, m);
-                negateNode(head2, n);
-                addition(head1, head2, head3, m, n, totalNode);
-                cout << "-";
-                //or
-                //negateNode(head3, totalNode - 1);
-            }
+            cout << "Performing addition\n";
+            cout << "The result is: \t\t";
+            totalNode = nodeNumAddition(m, n);
+            initializeResult(head1, head3, totalNode);
+            overflowAddition(head2, head3, n);
             //END ADDITION
             break;
         case 2: //-
-            if (flag == 2)      //==> NUM1 - NUM2
+            cout << "Performing subtraction\n";
+            cout << "The result is: \t\t";
+            totalNode = nodeNumSub(m, n);
+            if (!numCompare(head1, head2, m, n))
             {
-                subtraction(head1, head2, head3, m, n, totalNode);
-            }
-            else if (flag == 1) //==> NUM1 - (-NUM2)
-            {
-                negateNode(head2, n);
-                addition(head1, head2, head3, m, n, totalNode);
-            }
-            else if (flag == -1)//==> -NUM1 - NUM2 == -(NUM1 + NUM2)
-            {
-                negateNode(head1, m);
-                addition(head1, head2, head3, m, n, totalNode);
+                //a - b < 0, swap 2 numbers
+                initializeResult(head2, head3, totalNode);
+                underflowSub(head1, head3, m);
                 cout << "-";
-                //or
-                //negateNode(head3, totalNode - 1);
             }
-            else                //==> -NUM1 - (-NUM2) == NUM2 - NUM1
+            else
             {
-                negateNode(head1, m);
-                negateNode(head2, n);
-                subtraction(head2, head1, head3, n, m, totalNode);
+                //a - b >= 0, do normal calculation
+                initializeResult(head1, head3, totalNode);
+                underflowSub(head2, head3, n);
             }
             //END SUBTRACTION
             break;
         case 3: //*
-            if (flag == 2)      //==> NUM1 * NUM2
-            {
-                multiplication(head1, head2, head3, m, n, totalNode);
-            }
-            else if (flag == 1) //==> - (NUM1 * NUM2)
-            {
-                negateNode(head2, n);
-                multiplication(head1, head2, head3, m, n, totalNode);
-                cout << "-";
-                //or
-                //negateNode(head3, totalNode - 1);
-            }
-            else if (flag == -1)//==> - (NUM1 * NUM2)
-            {
-                negateNode(head1, m);
-                multiplication(head1, head2, head3, m, n, totalNode);
-                cout << "-";
-                //or
-                //negateNode(head3, totalNode - 1);
-            }
-            else                //==> NUM1 * NUM2
-            {
-                negateNode(head1, m);
-                negateNode(head2, n);
-                multiplication(head1, head2, head3, m, n, totalNode);
-            }
-            //END MULTIPLICATION
+            cout << "Performing multiplication\n";
+            cout << "The result is: \t\t";
+            totalNode = nodeNumMulti(m, n);
+            initializeResult(head3, totalNode); //initialize all digits to 0's
+            multiplication(head1, head2, head3, m, n);
             break;
         case 4: //division
             cout << "Performing division\n";
             cout << "The result is: \t\t";
-            //need implementation
+
+
             break;
         }
 
@@ -183,79 +131,6 @@ int main()
 }
 
 
-int isNegative(Node*& head1, Node*& head2, int m, int n)
-{
-    if (getListValue(head1, m - 1) > 0 && getListValue(head2, n - 1) > 0)
-    {
-        return 2;   //2 numbers are all positive
-    }
-    else if (getListValue(head1, m - 1) > 0 && getListValue(head2, n - 1) < 0)
-    {
-        return 1;   //the first number is positive and the other is negative
-    }
-    else if (getListValue(head1, m - 1) < 0 && getListValue(head2, n - 1) > 0)
-    {
-        return -1;  //the second number is positive and the other is negative
-    }
-    else
-    {
-        return -2;  //2 numbers are all negative
-    }
-}
-
-
-/*
-This function negates the upmost 3 digits to either positive or negative
-*/
-void negateNode(Node*& head, int m)
-{
-    setValue(head, m - 1, -getListValue(head, m - 1));
-}
-
-
-void addition(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode)
-{
-    cout << "Performing addition\n";
-    cout << "The result is: \t\t";
-    totalNode = nodeNumAddition(m, n);
-    initializeResult(head1, head3, totalNode);
-    overflowAddition(head2, head3, n);
-
-}
-
-void subtraction(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode)
-{
-    cout << "Performing subtraction\n";
-    cout << "The result is: \t\t";
-    totalNode = nodeNumSub(m, n);
-    if (!numCompare(head1, head2, m, n))
-    {
-        //a - b < 0, swap 2 numbers
-        initializeResult(head2, head3, totalNode);
-        underflowSub(head1, head3, m);
-        cout << "-";
-    }
-    else
-    {
-        //a - b >= 0, do normal calculation
-        initializeResult(head1, head3, totalNode);
-        underflowSub(head2, head3, n);
-    }
-
-}
-
-void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode)
-{
-    cout << "Performing multiplication\n";
-    cout << "The result is: \t\t";
-    totalNode = nodeNumMulti(m, n);
-    initializeResult(head3, totalNode); //initialize all digits to 0's
-    overflowMulti(head1, head2, head3, m, n);
-
-}
-
-
-
 bool digit(string number)
 {
     if (number == "")
@@ -268,7 +143,7 @@ bool digit(string number)
 }
 
 
-void overflowMulti(Node*& head1, Node*& head2, Node*& head3, int m, int n)
+void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n)
 {
     int i, j, val;
     for (i = 0; i < m; i++)
@@ -300,7 +175,7 @@ void menu() {
         << "2. subtruction" << endl
         << "3. multiplication" << endl
         << "4. division " << endl;
-    cout << "Or enter any other key to exit\n";
+    cout << "Enter any other key to exit\n";
 
 }
 
@@ -354,20 +229,14 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
     int length1 = static_cast<int>(num1.length());
     int length2 = static_cast<int>(num2.length());
 
-    if(num1[0] == '-')
-        nodeForNum1 = modifyNodeNums(length1 - 1);
-    else
-        nodeForNum1 = modifyNodeNums(length1);
-    if (num2[0] == '-')
-        nodeForNum2 = modifyNodeNums(length2 - 1);
-    else
-        nodeForNum2 = modifyNodeNums(length2);
-
+    nodeForNum1 = modifyNodeNums(length1);
+    nodeForNum2 = modifyNodeNums(length2);
     cout << "The first number is splited into " << nodeForNum1 << " nodes" << endl;
     cout << "The second number is splited into " << nodeForNum2 << " nodes" << endl;
 
     Node* ptr = head1;
     int i, j = 0;
+<<<<<<< HEAD
     if (length1 <= 4)
     {
         addNode(head1, stoi(num1.substr(0, length1)), 0);
@@ -383,10 +252,19 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
         }
         if (i != 0)
             addNode(head1, stoi(num1.substr(0, i)), j);
+=======
+    for (i = length1 - 3; i >= 0; i = i - 3) {
+        //cout << num1.substr(i, 3) << endl;
+        addNode(head1, stoi(num1.substr(i, 3)), j);
+        j++;
+        if (i < 3)
+            break;
+>>>>>>> parent of b4e6adf... complete version for positive/negative integer input, with an enlarged main
     }
 
     ptr = head2;
     j = 0;
+<<<<<<< HEAD
     if (length2 <= 4)
     {
         addNode(head2, stoi(num2.substr(0, length2)), 0);
@@ -402,6 +280,14 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
         }
         if (i != 0)
             addNode(head2, stoi(num2.substr(0, i)), j);
+=======
+    for (i = length2 - 3; i >= 0; i = i - 3) {
+        //cout << num1.substr(i, 3) << endl;
+        addNode(head2, stoi(num2.substr(i, 3)), j);
+        j++;
+        if (i < 3)
+            break;
+>>>>>>> parent of b4e6adf... complete version for positive/negative integer input, with an enlarged main
     }
 
 

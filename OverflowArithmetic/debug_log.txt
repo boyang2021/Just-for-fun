@@ -1,6 +1,2 @@
 The first number is:    5129752895728957729872897
 The second number is:   5329835728957275827882777
-
-Enter two overflowed number
--234523569
-3453
