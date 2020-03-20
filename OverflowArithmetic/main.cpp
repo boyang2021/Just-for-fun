@@ -368,27 +368,41 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
 
     Node* ptr = head1;
     int i, j = 0;
-    for (i = length1 - 3; i >= 0; i = i - 3) {
-        //cout << num1.substr(i, 3) << endl;
-        addNode(head1, stoi(num1.substr(i, 3)), j);
-        j++;
-        if(i == 4 && num1[0] == '-' || i < 3)
-            break;
+    if (length1 <= 4)
+    {
+        addNode(head1, stoi(num1.substr(0, length1)), 0);
     }
-    if (i != 0)
-        addNode(head1, stoi(num1.substr(0, i)), j);
+    else
+    {
+        for (i = length1 - 3; i >= 0; i = i - 3) {
+            //cout << num1.substr(i, 3) << endl;
+            addNode(head1, stoi(num1.substr(i, 3)), j);
+            j++;
+            if (i == 4 && num1[0] == '-' || i < 3)
+                break;
+        }
+        if (i != 0)
+            addNode(head1, stoi(num1.substr(0, i)), j);
+    }
 
     ptr = head2;
     j = 0;
-    for (i = length2 - 3; i >= 0; i = i - 3) {
-        //cout << num1.substr(i, 3) << endl;
-        addNode(head2, stoi(num2.substr(i, 3)), j);
-        j++;
-        if (i == 4 && num2[0] == '-' || i < 3)
-            break;
+    if (length2 <= 4)
+    {
+        addNode(head2, stoi(num2.substr(0, length2)), 0);
     }
-    if (i != 0)
-        addNode(head2, stoi(num2.substr(0, i)), j);
+    else
+    {
+        for (i = length2 - 3; i >= 0; i = i - 3) {
+            //cout << num1.substr(i, 3) << endl;
+            addNode(head2, stoi(num2.substr(i, 3)), j);
+            j++;
+            if (i == 4 && num2[0] == '-' || i < 3)
+                break;
+        }
+        if (i != 0)
+            addNode(head2, stoi(num2.substr(0, i)), j);
+    }
 
 
 }
