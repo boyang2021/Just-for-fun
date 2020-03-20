@@ -16,9 +16,7 @@ struct Node
 };
 
 void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n);
-//void overflow(Node*& head, int val, int n);
 int getListValue(Node*& head, int pos);
-//void setListValue(Node*& head, int pos, int val);
 void setValue(Node*& head, int pos, int val);
 void incrementValue(Node*& head, int pos, int val);
 void displayList(Node*& head);
@@ -78,7 +76,6 @@ int main()
         displayList(temp);
         cout << endl;
 
-
         switch (stoi(choice))
         {
         case 1: //+
@@ -114,7 +111,6 @@ int main()
             totalNode = nodeNumMulti(m, n);
             initializeResult(head3, totalNode); //initialize all digits to 0's
             multiplication(head1, head2, head3, m, n);
-
             break;
         case 4: //division
             cout << "Performing division\n";
@@ -131,9 +127,9 @@ int main()
 
     } while (choice >= "1" && choice <= "4");
 
-
     return 0;
 }
+
 
 bool digit(string number)
 {
@@ -161,27 +157,6 @@ void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n)
     }
 }
 
-/*
-This function is designed to address the multiplication
-in the arithmetic and does not include the case of
-carrying.
-
-void overflow(Node*& head, int val, int n)
-{
-    if (val / static_cast<int>(pow(10, 3)) >= 1)
-    {
-        //split the part that overflows 10^3 to the next 3-digit node
-        setListValue(head, n + 1, val / pow(10, 3));
-        //set the base 3 digits
-        setListValue(head, n, val % static_cast<int>(pow(10, 3)));
-    }
-    else
-    {
-        setListValue(head, n, val);
-    }
-}
-*/
-
 
 void incrementValue(Node*& head, int pos, int val)
 {
@@ -192,29 +167,6 @@ void incrementValue(Node*& head, int pos, int val)
     }
     ptr->num += val;
 }
-
-/*
-void setListValue(Node*& head, int pos, int val)
-{
-    Node* ptr = head;
-    int sum;
-    while (ptr != nullptr && ptr->loc != pos)
-    {
-        ptr = ptr->next;
-    }
-    if (ptr->num + val < static_cast<int>(pow(10, 3)))
-        ptr->num += val;
-    else
-    {
-        sum = val + ptr->num;
-        ptr->num = sum % static_cast<int>(pow(10, 3));
-        ptr = ptr->next;
-        ptr->num += sum / static_cast<int>(pow(10, 3));
-    }
-
-}
-*/
-
 
 
 void menu() {
@@ -231,16 +183,12 @@ void menu() {
 //new functions, re-arrange the functions
 //subtraction
 void input(string& num1, string& num2) {
-    //fstream readfile;
-    //string filename;
     cout << "Enter two overflowed number\n";
-    //getline(cin, filename);
-    //readfile.open(filename, ios::in | ios::binary);
     getline(cin, num1);
-    //readfile.ignore();
     getline(cin, num2);
 
 }
+
 
 int modifyNodeNums(int num)
 {
@@ -275,6 +223,7 @@ void addNode(Node*& head, int num, int pos)
         ptr->next = A;
     }
 }
+
 
 void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& nodeForNum1, int& nodeForNum2) {
     int length1 = static_cast<int>(num1.length());
@@ -312,6 +261,7 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
 
 }
 
+
 void initializeResult(Node*& head, int totalNode)
 {
     int i;
@@ -320,6 +270,7 @@ void initializeResult(Node*& head, int totalNode)
         addNode(head, 0, i);
     }
 }
+
 
 //initialize the result linked list with the first list's content
 void initializeResult(Node*& head1, Node*& head3, int totalNode)
@@ -336,6 +287,7 @@ void initializeResult(Node*& head1, Node*& head3, int totalNode)
     }
 }
 
+
 int getListValue(Node*& head, int pos)
 {
     Node* ptr = head;
@@ -347,6 +299,7 @@ int getListValue(Node*& head, int pos)
         return -1;
     return ptr->num;
 }
+
 
 void setValue(Node*& head, int pos, int val)
 {
@@ -391,6 +344,7 @@ void sequentialUnder(Node*& head, int val, int pos)
     }
 }
 
+
 void overflowAddition(Node*& head2, Node*& head3, int n)
 {
     int i;
@@ -400,6 +354,7 @@ void overflowAddition(Node*& head2, Node*& head3, int n)
     }
 }
 
+
 void underflowSub(Node*& head2, Node*& head3, int n)
 {
     int i;
@@ -408,6 +363,7 @@ void underflowSub(Node*& head2, Node*& head3, int n)
         sequentialUnder(head3, getListValue(head2, i), i);
     }
 }
+
 
 bool numCompare(Node*& head1, Node*& head2, int m, int n)
 {
@@ -433,6 +389,7 @@ bool numCompare(Node*& head1, Node*& head2, int m, int n)
     }
 }
 
+
 int nodeNumAddition(int m, int n)
 {
     if (m > n)
@@ -444,6 +401,7 @@ int nodeNumAddition(int m, int n)
         return n + 1;
     }
 }
+
 
 int nodeNumSub(int m, int n)
 {
@@ -458,10 +416,12 @@ int nodeNumSub(int m, int n)
 
 }
 
+
 int nodeNumMulti(int m, int n)
 {
     return m + n;
 }
+
 
 void displayList(Node*& head)
 {
