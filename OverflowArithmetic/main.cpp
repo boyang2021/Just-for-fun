@@ -166,8 +166,8 @@ int main()
             //END MULTIPLICATION
             break;
         case 4: //division
-            cout << "Performing division\n";
-            cout << "The result is: \t\t";
+
+
             //need implementation
             break;
         }
@@ -182,6 +182,282 @@ int main()
     return 0;
 }
 
+
+void division(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode)
+{
+    int totalDec, totalDecNode = 0;
+    cout << "Result in how many decimal places: ";
+    cin >> totalDec;
+    cin.ignore();
+    ////////////////////////////////
+    //need a validation
+    ////////////////////////////////
+    //allocate memory
+    Node* headDec = allocDecimalNode(totalDec, totalDecNode);
+    cout << "Performing division\n";
+    cout << "The result is: \t\t";
+    if (numCompare(head1, head2, m, n))
+    {
+        //num1 >= num2
+        totalNode = nodeNumDivision(m, n);
+        //initializeResult(head3, totalNode);
+    }
+    else
+    {
+        //num1 < num2 ==> 0.xxx
+        totalNode = 0;
+    }
+
+    if (totalNode != 0)
+    {
+        //do normal division with result >= 1
+        /////////////////////////////////////////////
+
+        /////////////////////////////////////////////
+
+    }
+
+    if (totalDecNode != 0)
+    {
+        //do decimal calculation
+        /////////////////////////////////////////////
+
+        /////////////////////////////////////////////
+    }
+    
+
+    
+
+}
+
+
+void divisionFor(Node*& head1, Node*& head2, Node*& head3, int m, int n, int val, int pos)
+{
+    int ceiling = 0;
+    Node* firstNum = getFirstDiviNum(head1, head2, m, n);
+    int currNode = getNodeNum(firstNum);
+    int first3List1 = getFirstThreeDigit(firstNum, currNode);
+    int first2List2 = getFirstTwoDigit(head2, n, ceiling);
+    int digit = sequentialDivi(head1, head2, m, n, first3List1, first2List2, ceiling);
+    addNode(head3, digit, 0);
+
+}
+
+
+int sequentialDivi(Node*& head1, Node*& head2, int m , int n, int val1, int val2, int val2Ceil)
+{
+    int lower = val1 / val2Ceil;
+    int upper = val1 / val2;
+    if (lower != upper)
+    {
+        if (compareValue(head1, head2, m, n, lower, upper))
+            return upper;
+        else
+            return lower;
+    }
+    else
+    {
+        return lower;
+    }
+}
+
+
+bool compareValue(Node*& head1, Node*& head2, int m, int n, int lower, int upper)
+{
+    Node* tempLow = nullptr, * tempUp = nullptr, * testHead1 = nullptr, * testHead2 = nullptr;
+    int totalNode1 = 0, totalNode2 = 0;
+    addNode(tempLow, lower, 0);
+    addNode(tempUp, upper, 0);
+    multiplication(head2, tempLow, testHead1, n, 1, totalNode1);
+    multiplication(head2, tempUp, testHead2, n, 1, totalNode2);
+
+    if (numCompare(head1, testHead2, m, getNodeNum(testHead2)) && numCompare(head1, testHead1, m, getNodeNum(testHead1)))
+    {
+        return true;    //have the ceiling value;
+    }
+    else
+    {
+        return false;   //the ceiling value exceeds NUM1, therefore have the floor value
+    }
+}
+
+
+
+
+int getNodeNum(Node*& head)
+{
+    int i = 0;
+    Node* ptr = head;
+    while (ptr != nullptr)
+    {
+        ptr = ptr->next;
+        i++;
+    }
+    return i;
+}
+
+
+int getFirstTwoDigit(Node*& head, int m, int &ceiling)
+{
+    int num;
+    if (countNodeDigit(head, m) == 1)
+    {
+        ceiling = num = getListValue(head, m - 1) * 10 + getListValue(head, m - 2) / 100;
+        if (!isfloor(head, m - 2, 100))
+            ceiling++;
+        return num;
+    }
+    else if (countNodeDigit(head, m) == 2)
+    {
+        ceiling = num = getListValue(head, m - 1);
+        if (!isfloor(head, m - 2))
+            ceiling++;
+        return num;
+    }
+    else
+    {
+        ceiling = num = getListValue(head, m - 1) / 10;
+        if (!isfloor(head, m - 2))
+            ceiling++;
+        return num;
+    }
+}
+
+
+int getFirstThreeDigit(Node*& head, int m)
+{
+    if (countNodeDigit(head, m) == 1)
+    {
+        return getListValue(head, m - 1) * 100 + getListValue(head, m - 2) / 10;
+    }
+    else if (countNodeDigit(head, m) == 2)
+    {
+        return getListValue(head, m - 1) * 10 + getListValue(head, m - 2) / 100;
+    }
+    else
+    {
+        return getListValue(head, m - 1);
+    }
+}
+
+
+bool isfloor(Node*& head, int pos, int look)
+{
+    int i;
+    if (getListValue(head, pos) % look != 0)
+        return false;
+    for (i = pos - 1; i >= 0; i--)
+    {
+        if (getListValue(head, i) != 0)
+            return false;
+    }
+    return true;
+}
+
+
+bool isfloor(Node*& head, int pos)
+{
+    int i;
+    for (i = pos; i >= 0; i--)
+    {
+        if (getListValue(head, i) != 0)
+            return false;
+    }
+    return true;
+}
+
+
+Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n)
+{
+    Node* temp = nullptr;
+    int i, j = 1;
+    int list1NodeLow, offsetNode;
+    int secondary = (n - 1) * 3 + countNodeDigit(head2, n) - countNodeDigit(head1, m);
+    int list1High = getListValue(head1, m - 1);
+    int list2High = getListValue(head2, n - 1);
+    if (list1High < list2High)  //the part of list1 with the same length of list2 cannot divide list2
+    {
+        secondary++;    //move to the next digit on the right
+    }
+
+    offsetNode = secondary / 3;
+    if (secondary % 3 != 0)
+    {
+        offsetNode++;
+        list1NodeLow = getListValue(head1, m - 1 - offsetNode);
+        list1NodeLow = modifyLowerBound(list1NodeLow, secondary);
+    }
+    else
+    {
+        list1NodeLow = getListValue(head1, m - 1 - offsetNode);
+    }
+
+    //add the lowest node to the list
+    addNode(temp, list1NodeLow, 0);
+    //add the rest of the nodes
+    for (i = m - offsetNode; i < m; i++)
+    {
+        addNode(temp, getListValue(head1, i), j);
+        j++;
+    }
+    return temp;
+}
+
+
+int modifyLowerBound(int num, int secondary)
+{
+    if (secondary % 3 == 1)
+    {
+        return num / 100;
+    }
+    else if (secondary % 3 == 2)
+    {
+        return num / 10;
+    }
+
+}
+
+int countNodeDigit(Node*& head, int m)
+{
+    if (getListValue(head, m - 1) < 10)
+    {
+        return 1;
+    }
+    else if (getListValue(head, m - 1) < 100)
+    {
+        return 2;
+    }
+    else
+    {
+        return 3;
+    }
+}
+
+
+
+/*
+This function allocates nodes for the decimal section and
+set all the digits in the nodes to 0's
+*/
+Node* allocDecimalNode(int totalDec, int totalDecNode)
+{
+    totalDecNode = modifyNodeNums(totalDec);
+    Node* head = nullptr;
+    initializeResult(head, totalDecNode);
+    return head;
+}
+
+int nodeNumDivision(int m, int n)
+{
+    if (m >= n) //the result has at least 1 digit or 0 (sometimes)
+    {
+        return m - n + 1;
+    }
+    else
+    {
+        return 0;   //the result is fully decimal (e.g. 0.xxx)
+    }
+}
 
 int isNegative(Node*& head1, Node*& head2, int m, int n)
 {
@@ -408,6 +684,7 @@ void cutString(string& num1, string& num2, Node*& head1, Node*& head2, int& node
 }
 
 
+//initalize the result linked list with 0's
 void initializeResult(Node*& head, int totalNode)
 {
     int i;
