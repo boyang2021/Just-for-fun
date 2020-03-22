@@ -46,11 +46,11 @@ void multiplication(Node*& head1, Node*& head2, Node*& head3, int m, int n, int 
 void division(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode);
 void stepNextNode(int& pos, int& place);
 int getNextDigit(Node*& head, int pos, int sub);
-bool compareValue(Node*& head1, Node*& head2, Node*& testHead1, Node*& testHead2, Node*& r, int m, int n, int lower, int upper);
+bool compareValue(Node*& head1, Node*& head2, Node*& testHead1, Node*& testHead2, int m, int n, int lower, int upper);
 int getNodeNum(Node*& head);
 int getFirstTwoDigit(Node*& head, int m, int& ceiling);
-int getFirstThreeDigit(Node*& head, int m, int& pos, int& place);
-Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n);
+int getFirstThreeDigit(Node*& head, int m, int num2);
+Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n, int& offsetNode, int& place);
 Node* currentNode(Node*& head, int pos);
 bool isfloor(Node*& head, int pos, int look);
 bool isfloor(Node*& head, int pos);
@@ -64,6 +64,7 @@ int nodeNumDivision(int m, int n);
 int isNegative(Node*& head1, Node*& head2, int m, int n);
 void negateNode(Node*& head, int m);
 void clearTopZero(Node*& head);
+int numberDigits(Node*& head);
 
 
 int main() 
@@ -257,65 +258,125 @@ void divisionFor(Node*& head1, Node*& head2, Node*& head3, int m, int n)
 {
     int i, k = 0, totalNode = 0;
     int ceiling = 0;
-    int sub, pos, next;
+    int sub, next, offset;
     Node* r = nullptr;
     Node* aux10 = nullptr;
     addNode(aux10, 10, 0);
     Node* R = nullptr;
     //Node* curr = nullptr;
 
-    Node* firstNum = getFirstDiviNum(head1, head2, m, n);
+    Node* firstNum = getFirstDiviNum(head1, head2, m, n, offset, sub);
     clearTopZero(firstNum);
+    offset = m - offset - 1;
     int currNode = getNodeNum(firstNum);
-    int first3List1 = getFirstThreeDigit(firstNum, currNode, pos, sub);
+    int first3List1 = getFirstThreeDigit(firstNum, currNode, numberDigits(head2));
     int first2List2 = getFirstTwoDigit(head2, n, ceiling);
     int digit = sequentialDivi(firstNum, head2, r, getNodeNum(firstNum), n, first3List1, first2List2, ceiling);
     addNode(head3, digit, k);
     k++;
     multiplication(r, aux10, R, getNodeNum(r), 1, totalNode);
-    stepNextNode(pos, sub);
-    next = getNextDigit(head1, pos, sub);
+    stepNextNode(offset, sub);
+    next = getNextDigit(head1, offset, sub);
     incrementValue(R, 0, next);
-    while (pos != 0 || sub != 3)
+    clearTopZero(R);
+    while (offset != 0 || sub != 3)
     {
         r = nullptr;
-        if (numCompare(R, head2, getNodeNum(r), n))
+        if (numCompare(R, head2, getNodeNum(R), n))
         {
             //have enough number to be divided
             currNode = getNodeNum(R);
-            first3List1 = getFirstThreeDigit(R, currNode, pos, sub);
-            digit = sequentialDivi(head1, head2, r, m, n, first3List1, first2List2, ceiling);
+            first3List1 = getFirstThreeDigit(R, currNode, numberDigits(head2));
+            digit = sequentialDivi(R, head2, r, getNodeNum(R), n, first3List1, first2List2, ceiling);
             addNode(head3, digit, k);
             k++;
+            R = nullptr;
+            stepNextNode(offset, sub);
+            multiplication(r, aux10, R, getNodeNum(r), 1, totalNode);
+            next = getNextDigit(head1, offset, sub);
+            incrementValue(R, 0, next);
         }
         else
         {
             addNode(head3, 0, k);
             k++;
+            stepNextNode(offset, sub);
+            multiplication(R, aux10, r, getNodeNum(R), 1, totalNode);
+            R = r;
+            next = getNextDigit(head1, offset, sub);
+            incrementValue(R, 0, next);
         }
-
-        stepNextNode(pos, sub);
-        multiplication(r, aux10, R, getNodeNum(r), 1, totalNode);
-        next = getNextDigit(head1, pos, sub);
-        incrementValue(R, 0, next);
+        clearTopZero(R);
     }
+
+    if (numCompare(R, head2, getNodeNum(R), n))
+    {
+        //have enough number to be divided
+        currNode = getNodeNum(R);
+        first3List1 = getFirstThreeDigit(R, currNode, numberDigits(head2));
+        digit = sequentialDivi(R, head2, r, getNodeNum(R), n, first3List1, first2List2, ceiling);
+        addNode(head3, digit, k);
+        k++;
+        R = r;
+        /*
+        stepNextNode(offset, sub);
+        multiplication(r, aux10, R, getNodeNum(r), 1, totalNode);
+        next = getNextDigit(head1, offset, sub);
+        incrementValue(R, 0, next);
+        */
+    }
+    else
+    {
+        addNode(head3, 0, k);
+        k++;
+        /*
+        stepNextNode(offset, sub);
+        multiplication(R, aux10, r, getNodeNum(R), 1, totalNode);
+        R = r;
+        next = getNextDigit(head1, offset, sub);
+        incrementValue(R, 0, next);
+        */
+    }
+    clearTopZero(R);
+
+
 }
 
 
 void clearTopZero(Node*& head)
 {
     Node* temp = currentNode(head, getNodeNum(head) - 1);
-    if (temp->num == 0)
+    while (temp != nullptr && temp->num == 0)
     {
         temp = currentNode(head, getNodeNum(head) - 2);
-        temp->next = nullptr;
+        if(temp != nullptr)
+            temp->next = nullptr;
     }
+}
+
+
+int numberDigits(Node*& head)
+{
+    int firstNode;
+    if (getListValue(head, getNodeNum(head) - 1) / 100 != 0)
+    {
+        firstNode = 3;
+    }
+    else if (getListValue(head, getNodeNum(head) - 1) / 10 != 0)
+    {
+        firstNode = 2;
+    }
+    else
+    {
+        firstNode = 1;
+    }
+    return firstNode + (getNodeNum(head) - 1) * 3;
 }
 
 
 void stepNextNode(int &pos, int& place)
 {
-    if (place == 3)
+    if (place >= 3)
     {
         pos--;
         place = 1;
@@ -348,37 +409,28 @@ int sequentialDivi(Node*& head1, Node*& head2, Node*& r, int m , int n, int val1
     {
         for (int i = lower; i < upper; i++)
         {
-            if (!compareValue(head1, head2, testHead1, testHead2, r, m, n, i, i + 1))
+            if (!compareValue(head1, head2, testHead1, testHead2, m, n, i, i + 1))
             {
                 subtraction(head1, testHead1, r, m, getNodeNum(testHead1), 0);
                 return i;
             }
-            testHead1 = nullptr;
-            testHead2 = nullptr;
         }
         subtraction(head1, testHead2, r, m, getNodeNum(testHead2), 0);
         return upper;
     }
     else
     {
-        compareValue(head1, head2, testHead1, testHead2, r, m, n, lower, upper);
+        compareValue(head1, head2, testHead1, testHead2, m, n, lower, upper);
         subtraction(head1, testHead1, r, m, getNodeNum(testHead1), 0);
         return lower;
     }
 }
 
 
-bool compareValue(Node*& head1, Node*& head2, Node*& testHead1, Node*& testHead2, Node*& r, int m, int n, int lower, int upper)
+bool compareValue(Node*& head1, Node*& head2, Node*& testHead1, Node*& testHead2, int m, int n, int lower, int upper)
 {
     Node* tempLow = nullptr, * tempUp = nullptr, * h = nullptr, * head = head1;
-    r = nullptr;
-    if (lower > 9)
-    {
-        Node* aux = nullptr;
-        addNode(aux, 10, 0);
-        multiplication(head1, aux, h, m, 1, 0);
-        head = h;
-    }
+    testHead1 = testHead2 = nullptr;
     addNode(tempLow, lower, 0);
     addNode(tempUp, upper, 0);
     multiplication(head2, tempLow, testHead1, n, 1, 0);
@@ -440,28 +492,42 @@ int getFirstTwoDigit(Node*& head, int m, int &ceiling)
 }
 
 
-int getFirstThreeDigit(Node*& head, int m, int &pos, int& place)
+int getFirstThreeDigit(Node*& head, int m, int num2)
 {
+    int numDigits = numberDigits(head);
+    if (numDigits > num2)
+    {
+        if (countNodeDigit(head, m) == 1)
+        {
+            return getListValue(head, m - 1) * 100 + getListValue(head, m - 2) / 10;
+        }
+        else if (countNodeDigit(head, m) == 2)
+        {
+            return getListValue(head, m - 1) * 10 + getListValue(head, m - 2) / 100;
+        }
+        else
+        {
+            return getListValue(head, m - 1);
+        }
+    }
+    
     if (countNodeDigit(head, m) == 1)
     {
-        //currNode = currentNode(head, m - 2);
-        place = 2;
-        pos = m - 2;
-        return getListValue(head, m - 1) * 100 + getListValue(head, m - 2) / 10;
+        //place = 1;
+        //pos = m - 2;
+        return getListValue(head, m - 1) * 10 + getListValue(head, m - 2) / 100;
     }
     else if (countNodeDigit(head, m) == 2)
     {
-        //currNode = currentNode(head, m - 2);
-        place = 1;
-        pos = m - 2;
-        return getListValue(head, m - 1) * 10 + getListValue(head, m - 2) / 100;
+        //place = 3;
+        //pos = m - 2;
+        return getListValue(head, m - 1);
     }
     else
     {
-        //currNode = currentNode(head, m - 1);
-        place = 3;
-        pos = m - 1;
-        return getListValue(head, m - 1);
+        //place = 2;
+        //pos = m - 1;
+        return getListValue(head, m - 1) / 10;
     }
 }
 
@@ -503,12 +569,12 @@ bool isfloor(Node*& head, int pos)
 }
 
 
-Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n)
+Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n, int &offsetNode, int &place)
 {
     Node* temp = nullptr, * h = nullptr, * multi = nullptr, * lowNode = nullptr, * aux = nullptr;
 
-    int i, j = 1, place = 0, pos;
-    int list1NodeLow, offsetNode;
+    int i, j = 1, pos;
+    int list1NodeLow;
     int currNum, currDigit, nextNum;
     int secondary = (n - 1) * 3 + countNodeDigit(head2, n) - countNodeDigit(head1, m);
     int list1High = getListValue(head1, m - 1);
