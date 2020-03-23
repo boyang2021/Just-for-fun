@@ -32,7 +32,7 @@ void sequentialUnder(Node*& head, int val, int pos);
 int sequentialDivi(Node*& head1, Node*& head2, Node*& r, int m, int n, int val1, int val2, int val2Ceil);
 void overflowAddition(Node*& head2, Node*& head3, int n);
 void underflowSub(Node*& head2, Node*& head3, int n);
-int divisionFor(Node*& head1, Node*& head2, Node*& head3, int n, int loc, int place);
+int divisionFor(Node*& head1, Node*& head2, Node*& head3, Node*& origHead1, int n, int loc, int place, int k);
 bool numCompare(Node*& head1, Node*& head2, int m, int n);
 int nodeNumAddition(int m, int n);
 int nodeNumSub(int m, int n);
@@ -51,7 +51,7 @@ bool compareValue(Node*& head1, Node*& head2, Node*& testHead1, Node*& testHead2
 int getNodeNum(Node*& head);
 int getFirstTwoDigit(Node*& head, int m, int& ceiling);
 int getFirstThreeDigit(Node*& head, int m, int num2);
-Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n, int& offsetNode, int& place);
+Node* getFirstDiviNum(Node*& head1, Node*& head2, Node*& origHead1, int m, int n, int& offsetNode, int& place);
 Node* currentNode(Node*& head, int pos);
 bool isfloor(Node*& head, int pos, int look);
 bool isfloor(Node*& head, int pos);
@@ -213,7 +213,7 @@ int main()
 
 int division(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode)
 {
-    int totalDec, totalDecNode = 0, integerSize = 0, pos = 0, place = 3;
+    int totalDec, totalDecNode = 0, integerSize = 0, pos = 0, place = 3, sup = 0;
     Node* aux10 = nullptr, * temp = nullptr, * aux = nullptr;
     cout << "Result in how many decimal places: ";
     cin >> totalDec;
@@ -225,6 +225,17 @@ int division(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNo
     //do normal division with result >= 1
     //augumented the number if the result contains decimals
     temp = head1;
+    if (!numCompare(head1, head2, getNodeNum(head1), n))
+    {
+        if (numberDigits(head1) != numberDigits(head2))
+            sup = numberDigits(head2) - numberDigits(head1);
+
+        //supply upmost 0's in (0.00xxx00abcdef)
+        for (int i = 0; i < sup; i++)
+            addNode(head3, 0, i);
+
+    }
+
     if (totalDec != 0)
     {
         temp = nullptr;
@@ -251,49 +262,46 @@ int division(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNo
     }
 
     /////////////////////////////////////////////
-    integerSize = divisionFor(temp, head2, head3, n, pos, place);
+    integerSize = divisionFor(temp, head2, head3, head1, n, pos, place, sup);
     /////////////////////////////////////////////
-
+    //if (numberDigits(head2) == 1)
+    //    integerSize++;
     cout << "The result is: \t\t";
-
-    if (!numCompare(head1, head2, getNodeNum(head1), n))
-    {
-        cout << "0.";
-        displayEveryDigit(head3);
-        cout << endl;
-    }
-    else
-    {
-        displayEveryDigit(head3, integerSize);
-        cout << endl;
-    }
+    displayEveryDigit(head3, integerSize);
+    cout << endl;
 
     return integerSize;
 }
 
 
-int divisionFor(Node*& head1, Node*& head2, Node*& head3, int n, int loc, int place)
+int divisionFor(Node*& head1, Node*& head2, Node*& head3, Node*& origHead1, int n, int loc, int place, int k)
 {
-    int i, k = 0, totalNode = 0;
+    int i, totalNode = 0;
     int ceiling = 0, a = 0;
     int sub, next, offset;
+    int first2List2;
     bool flag = true;
     Node* r = nullptr;
     Node* aux10 = nullptr;
     addNode(aux10, 10, 0);
     Node* R = nullptr;
 
-    Node* firstNum = getFirstDiviNum(head1, head2, getNodeNum(head1), n, offset, sub);
+    Node* firstNum = getFirstDiviNum(head1, head2, origHead1, getNodeNum(head1), n, offset, sub);
     clearTopZero(firstNum);
     offset = getNodeNum(head1) - offset - 1;
     if (offset == 0 && sub == 3)
         flag = false;
     int currNode = getNodeNum(firstNum);
     int first3List1 = getFirstThreeDigit(firstNum, currNode, numberDigits(head2));
-    int first2List2 = getFirstTwoDigit(head2, n, ceiling);
+    if (numberDigits(head2) != 1)
+        first2List2 = getFirstTwoDigit(head2, n, ceiling);
+    else
+    {
+        first2List2 = (head2->num) * 10;
+        ceiling = first2List2;
+    }
     int digit = sequentialDivi(firstNum, head2, r, getNodeNum(firstNum), n, first3List1, first2List2, ceiling);
-    if (digit != 0)
-        a++;
+    a++;
     addNode(head3, digit, k);
     k++;
     multiplication(r, aux10, R, getNodeNum(r), 1, totalNode);
@@ -307,7 +315,7 @@ int divisionFor(Node*& head1, Node*& head2, Node*& head3, int n, int loc, int pl
 
     while (offset != 0 || sub != 3)
     {
-        if (offset > loc || offset == loc && sub < place)
+        if (offset > loc || offset == loc && sub <= place)
             a++;
         r = nullptr;
         if (numCompare(R, head2, getNodeNum(R), n))
@@ -336,7 +344,7 @@ int divisionFor(Node*& head1, Node*& head2, Node*& head3, int n, int loc, int pl
         }
         clearTopZero(R);
     }
-    a++;
+    //a++;
 
     if (numCompare(R, head2, getNodeNum(R), n))
     {
@@ -551,7 +559,7 @@ int getFirstThreeDigit(Node*& head, int m, int num2)
             return getListValue(head, m - 1);
         }
     }
-    
+
     if (countNodeDigit(head, m) == 1)
     {
         //place = 1;
@@ -623,22 +631,24 @@ int getUpmostDigit(int num)
 }
 
 
-Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n, int &offsetNode, int &place)
+Node* getFirstDiviNum(Node*& head1, Node*& head2, Node*& origHead1, int m, int n, int &offsetNode, int &place)
 {
     Node* temp = nullptr, * h = nullptr, * multi = nullptr, * lowNode = nullptr, * aux = nullptr;
 
     int pos;
     int list1NodeLow;
     int secondary = (n - 1) * 3 + countNodeDigit(head2, n) - countNodeDigit(head1, m);
-    int list1High = getListValue(head1, m - 1);
-    list1High = getUpmostDigit(list1High);
-    int list2High = getListValue(head2, n - 1);
-    list2High = getUpmostDigit(list2High);
-    if (list1High < list2High)  //the part of list1 with the same length of list2 cannot divide list2
+    if (numCompare(origHead1, head2, getNodeNum(origHead1), n))
     {
-        secondary++;    //move to the next digit on the right
+        int list1High = getListValue(head1, m - 1);
+        list1High = getUpmostDigit(list1High);
+        int list2High = getListValue(head2, n - 1);
+        list2High = getUpmostDigit(list2High);
+        if (list1High < list2High)  //the part of list1 with the same length of list2 cannot divide list2
+        {
+            secondary++;    //move to the next digit on the right
+        }
     }
-
     offsetNode = secondary / 3;
     place = secondary % 3;
     if (place != 0)

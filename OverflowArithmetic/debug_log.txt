@@ -14,3 +14,21 @@ Result in how many decimal places: 5
 32478567353845687352 / 747834756732676 = 43,430.13
 
 2435474 / 3553555 = 0.68536268609885
+
+5832645765 / 13723856235 = 0.425000500
+
+The first number is:    5628756489648
+The second number is:   5528562865578		The result is:          10.1812
+
+The first number is:    258376563
+The second number is:   8523453553		
+==>0.03031360
+
+The first number is:    2834758235
+The second number is:   3245834755
+
+
+The first number is:    1345791345
+The second number is:   193579387287535
+Result in how many decimal places: 5
+
