@@ -37,7 +37,8 @@ bool numCompare(Node*& head1, Node*& head2, int m, int n);
 int nodeNumAddition(int m, int n);
 int nodeNumSub(int m, int n);
 int nodeNumMulti(int m, int n);
-void displayEveryDigit(Node*& head, int intsize);   //since subscript 0
+void displayEveryDigit(Node*& head, int intsize);   //since subscript 0 with decimal point
+void displayEveryDigit(Node*& head);                //since subscript 0 without decimal point
 void displayList(Node*& head);                      //recursive, since subscript n
 bool digit(string number);
 void addition(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNode);
@@ -203,11 +204,6 @@ int main()
             cout << endl;
 
         }
-        else
-        {
-            displayEveryDigit(head3, size);
-            cout << endl;
-        }
         
     } while (choice >= "1" && choice <= "4");
 
@@ -253,17 +249,25 @@ int division(Node*& head1, Node*& head2, Node*& head3, int m, int n, int totalNo
         pos = totalDec / 3;
         place = 3 - (totalDec % 3);
     }
+
     /////////////////////////////////////////////
     integerSize = divisionFor(temp, head2, head3, n, pos, place);
     /////////////////////////////////////////////
-    if (!numCompare(head1, head2, getNodeNum(temp), n))
-    {
-        cout << "0.";
-    }
 
     cout << "The result is: \t\t";
 
-    
+    if (!numCompare(head1, head2, getNodeNum(head1), n))
+    {
+        cout << "0.";
+        displayEveryDigit(head3);
+        cout << endl;
+    }
+    else
+    {
+        displayEveryDigit(head3, integerSize);
+        cout << endl;
+    }
+
     return integerSize;
 }
 
@@ -282,7 +286,7 @@ int divisionFor(Node*& head1, Node*& head2, Node*& head3, int n, int loc, int pl
     Node* firstNum = getFirstDiviNum(head1, head2, getNodeNum(head1), n, offset, sub);
     clearTopZero(firstNum);
     offset = getNodeNum(head1) - offset - 1;
-    if (offset == 0)
+    if (offset == 0 && sub == 3)
         flag = false;
     int currNode = getNodeNum(firstNum);
     int first3List1 = getFirstThreeDigit(firstNum, currNode, numberDigits(head2));
@@ -623,9 +627,8 @@ Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n, int &offsetNode,
 {
     Node* temp = nullptr, * h = nullptr, * multi = nullptr, * lowNode = nullptr, * aux = nullptr;
 
-    int i, j = 1, pos;
+    int pos;
     int list1NodeLow;
-    int currNum, currDigit, nextNum;
     int secondary = (n - 1) * 3 + countNodeDigit(head2, n) - countNodeDigit(head1, m);
     int list1High = getListValue(head1, m - 1);
     list1High = getUpmostDigit(list1High);
@@ -657,7 +660,7 @@ Node* getFirstDiviNum(Node*& head1, Node*& head2, int m, int n, int &offsetNode,
     h = cutNodes(head1, pos + 1, m);
     multiplication(h, aux, multi, getNodeNum(h), getNodeNum(aux), 0);
     addition(multi, lowNode, temp, getNodeNum(multi), getNodeNum(lowNode), 0);
-
+    clearTopZero(temp);
     return temp;
 }
 
@@ -1167,6 +1170,17 @@ void displayEveryDigit(Node*& head, int intsize)
         i++;
     }
 }
+
+void displayEveryDigit(Node*& head)
+{
+    Node* ptr = head;
+    while (ptr != nullptr)
+    {
+        cout << ptr->num;
+        ptr = ptr->next;
+    }
+}
+
 
 
 void displayList(Node*& head)
